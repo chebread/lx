@@ -1,0 +1,98 @@
+# https://github.com/cli/cli/blob/trunk/.gitignore
+
+/bin
+/share/bash-completion/completions
+/share/fish/vendor_completions.d
+/share/man/man1
+/share/zsh/site-functions
+/gh-cli
+.envrc
+/dist
+/site
+.github/**/node_modules
+/CHANGELOG.md
+/.goreleaser.generated.yml
+/script/build
+/script/build.exe
+/pkg_payload
+/build/macOS/resources
+
+# Windows resource files
+/cmd/gh/*.syso
+
+# VS Code
+.vscode
+
+# IntelliJ
+.idea
+
+# macOS
+.DS_Store
+
+# vim
+*.swp
+
+# Emacs
+*~
+
+vendor/
+
+# https://github.com/github/gitignore/blob/main/Go.gitignore
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# Editor/IDE
+# .idea/
+# .vscode/
+
+# for JS
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# custom
+
+test/
+
+lx-config.yaml
