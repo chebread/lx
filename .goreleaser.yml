@@ -1,0 +1,52 @@
+version: 2
+
+project_name: lx
+
+builds:
+  - id: lx-build
+    main: ./cmd/main.go
+    binary: lx
+
+    env:
+      - CGO_ENABLED=1
+
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+    goos:
+      - darwin
+
+    goarch:
+      - amd64 # Intel Mac
+      - arm64 # Apple Silicon
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    formats: ["tar.gz"]
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  disable: true
+
+brews:
+  - repository:
+      owner: chebread
+      name: homebrew-lx
+      branch: master
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+
+    homepage: "https://github.com/chebread/lx"
+    description: "Controllable AI for Gophers."
+    license: "AGPL-3.0"
+    directory: Formula
+
+    install: |
+      bin.install "lx"
+
+    test: |
+      system "#{bin}/lx --version"
