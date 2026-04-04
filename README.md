@@ -34,125 +34,18 @@ It all works in your editor, on your machine, under your terms.
 
 The function signature is the contract. `lx` treats your function names, parameters, and return types as an immutable contract. AI cannot change your architecture; it can only fulfill the implementation details you demand.
 
-### Example
-
-```go
-// You define the exact inputs and outputs.
-func CalculateDiscount(price float64, customerType string) (float64, error) {
-    // Intent: You command the AI.
-    lx.Gen("Calculate a 15% discount for 'Premium' customers, otherwise 0%.")
-
-    // Output: The dummy return ensures the contract is maintained.
-    // lx will replace the body but strictly adhere to returning (float64, error).
-    return 0.0, nil 
-}
-
-```
-
 ## Deterministic AI Coding
 
 `lx` doesn't just read your code; it runs it. If a function is not reached during execution, `lx` touches nothing. It strictly adheres to the Go runtime path. No hallucinations for dead code, no assumptions about unused functions.
-
-### Example
-
-```go
-func main() {
-    // lx traces this execution path. It captures the real runtime data.
-    GenerateReport([]string{"sales", "marketing"})
-
-    if false {
-        // lx ignores this entirely. 
-        // No assumptions, no hallucinations for dead code.
-        LegacyCleanup()
-    }
-}
-
-func GenerateReport(data []string) string { 
-    lx.Gen("Format the data slice into a comma-separated string report.")
-    return "dummy-report" 
-}
-
-func LegacyCleanup() { 
-    // This lx.Gen is never triggered during the capture phase.
-    lx.Gen("Delete all temporary files.")
-}
-
-```
 
 ## Continuous Development
 
 With `lx`, once you write a function’s inputs and outputs, you can keep moving as if the logic is already there. But it’s not "design-only" — your program still has to compile and run. You drive the flow and the contract; `lx` uses runtime traces to fill in the function internals.
 
-### Example
-
-```go
-// 1. You write the higher-level flow as if the logic is already complete.
-func ProcessUser(rawName string) error {
-    // 2. You establish the data flow. The program compiles and runs.
-    sanitized := SanitizeInput(rawName) 
-    return SaveToDB(sanitized)
-}
-
-// 3. You define the contracts using lx.Gen and keep moving.
-func SanitizeInput(input string) string {
-    lx.Gen("Trim leading/trailing spaces and convert to Title Case.")
-    return "DummyString"
-}
-
-func SaveToDB(name string) error {
-    lx.Gen("Log the name being saved, then return nil.")
-    return nil
-}
-
-```
-
 ## Safe Recovery
 `lx` modifies your source code to inject trace hooks for runtime capture. If your program panics, encounters a fatal error, or you manually abort the process (`Ctrl+C`), `lx` intercepts the OS signals (SIGTERM/SIGINT). It guarantees a clean rollback, instantly reverting your files to their exact original state. Your codebase is never left broken or polluted with spy code.
 
-### Example
-
-Even if your orchestration logic contains a fatal flaw, `lx` protects your source files.
-
-```go
-func main() {
-    // You are building your flow, but accidentally introduce a bug.
-    // This will crash during the 'lx' capture execution.
-    TriggerFatalError()
-
-    // lx never reaches this because the program panicked.
-    LX_ProcessData("data")
-}
-
-func TriggerFatalError() {
-    var ptr *int
-    fmt.Println(*ptr) // Panic: nil pointer dereference
-}
-
-func LX_ProcessData(input string) string {
-    lx.Gen("Process the input string safely.")
-    return ""
-}
-
-```
-
-When you run `lx`, it catches the crash, halts the AI generation process, and immediately cleans up the injected trace hooks:
-
-```bash
-$ lx .
-[lx] Start running...
-[lx] Converting code
-[lx] Run the program and collect data
-panic: runtime error: invalid memory address or nil pointer dereference
-
-[lx] Stop: Execution failed. Fix your Go code first.
-[lx] Forced termination detected. Restoring source code...
-
-```
-
-Your `main.go` remains exactly as you wrote it, free of any internal `lx.Spy` injections, ready for you to fix the bug.
-
 ---
-
 
 # Usage
 
@@ -641,17 +534,17 @@ model: "gemini-2.0-flash"
 
 ```
 
-### Option B: Universal CLI (Gemini, Claude, Ollama, etc.)
+### Option B: Universal CLI (Gemini, Claude, Apfel, etc.)
 
 `lx` can wrap any CLI tool installed on your machine.
 Use the `command` provider and define the argument template. `lx` will automatically substitute `{{prompt}}` and `{{model}}` at runtime.
 
-#### 1. Google Gemini CLI (Zero Cost / No API Key in Config)
+#### Google Gemini CLI
 
 ```yaml
 provider: "command"
 bin_path: "/usr/local/bin/gemini" # Check with `which gemini`
-model: "gemini-2.0-flash"
+model: "gemini-2.0-flash" # Choose the model you want
 args:
   - "-p"
   - "{{prompt}}"
@@ -659,38 +552,32 @@ args:
   - "{{model}}"
   - "-o"
   - "text"
-
 ```
 
-#### 2. Claude Code (Anthropic)
+#### Claude Code
 
 ```yaml
 provider: "command"
-bin_path: "/usr/local/bin/claude"
-model: "claude-3-7-sonnet"
+bin_path: "/usr/local/bin/claude" # Check with `which claude`
+model: "claude-3-7-sonnet" # Choose the model you want
 args:
   - "-p"
   - "{{prompt}}"
   - "--model"
   - "{{model}}"
-
 ```
 
-#### 3. Ollama (Local / Offline / Free)
-
-Run Llama 3 or DeepSeek locally without internet.
+#### Apfel
+`lx` also fully supports [apfel](https://github.com/Arthur-Ficial/apfel).
 
 ```yaml
 provider: "command"
-bin_path: "/usr/local/bin/ollama"
-model: "llama3"
+bin_path: "/opt/homebrew/bin/apfel" # Check with `which apfel`
+model: "apple-foundation-model" # You do not need to specify a model for apfel. The field just needs to be non-blank.
 args:
-  - "run"
-  - "{{model}}"
+  - "-q"
   - "{{prompt}}"
-
 ```
-
 
 ## 4. Hierarchical Configuration
 
