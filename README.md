@@ -520,8 +520,14 @@ go get github.com/chebread/lx
 
 ## 3. Configuration
 
-Create an `lx-config.yaml` file in your home directory (`~/`) or project root.
-`lx` supports two modes: Direct API and Universal Command.
+You can easily create or modify your configuration files using `lx` interactive command-line flags:
+
+* **Local Config**: Run `lx --init-local` in your project root to create or modify `./lx-config.yaml`.
+* **Global Config**: Run `lx --init-global` to create or modify the global config file at `~/.config/lx/lx-config.yaml`.
+
+The wizard will guide you through the setup. If a configuration file already exists at the path, it will pre-populate the prompts with the existing settings as defaults (e.g. `[current_value]`), allowing you to modify only the fields you want to change.
+
+Alternatively, you can manually create the `lx-config.yaml` files. `lx` supports two configuration modes: Direct API and Universal Command.
 
 ### Option A: Direct API (Google Gemini)
 
@@ -585,10 +591,10 @@ args:
 
 ### 1. Global Config
 
-Located at `~/lx-config.yaml` (or your OS equivalent), this defines your default preferences across all projects. For example, setting Google Gemini as your standard fallback:
+Located at `~/.config/lx/lx-config.yaml` (or your OS equivalent), this defines your default preferences across all projects. For example, setting Google Gemini as your standard fallback:
 
 ```yaml
-# ~/lx-config.yaml
+# ~/.config/lx/lx-config.yaml
 provider: "gemini"
 api_key: "YOUR_API_KEY"
 model: "gemini-2.0-flash"
@@ -637,7 +643,7 @@ $ cd /some/other/path
 $ lx .
 
 [lx] Start running...
-[lx] Config: ~/lx-config.yaml [Global]
+[lx] Config: ~/.config/lx/lx-config.yaml [Global]
 [lx] Provider: [gemini] / Model: [gemini-2.0-flash]
 [lx] Converting code...
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -19,9 +20,13 @@ func main() {
 	var (
 		showVersion bool
 		opts        options
+		initLocal   bool
+		initGlobal  bool
 	)
 
 	flag.BoolVar(&showVersion, "version", false, "Print version")
+	flag.BoolVar(&initLocal, "init-local", false, "Initialize/modify local config (lx-config.yaml)")
+	flag.BoolVar(&initGlobal, "init-global", false, "Initialize/modify global config (~/.config/lx/lx-config.yaml)")
 	flag.DurationVar(&opts.timeout, "timeout", 5*time.Minute, "Timeout for `go run` capture phase")
 	flag.BoolVar(&opts.showStdout, "show-stdout", false, "Print target program stdout (excluding lx trace lines)")
 	flag.IntVar(&opts.maxPromptChars, "max-prompt", 4096, "Max characters of prompt sent to LLM (runtime captured input)")
@@ -32,6 +37,28 @@ func main() {
 
 	if showVersion {
 		fmt.Printf("lx %s\n", version)
+		return
+	}
+
+	if initLocal {
+		localPath := "lx-config.yaml"
+		err := runConfigWizard(localPath, true)
+		if err != nil {
+			log.Fatalf("[lx] Config Init Error: %v", err)
+		}
+		return
+	}
+
+	if initGlobal {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatalf("[lx] Could not find user home directory: %v", err)
+		}
+		globalPath := filepath.Join(home, ".config", "lx", "lx-config.yaml")
+		err = runConfigWizard(globalPath, false)
+		if err != nil {
+			log.Fatalf("[lx] Config Init Error: %v", err)
+		}
 		return
 	}
 
