@@ -83,22 +83,18 @@ func processSingleTarget(opts options, llm LLM, cfg *Config, target TargetInfo, 
 		}
 	}
 
-	systemPrompt := fmt.Sprintf(`GO FUNC BODY GEN.
+	systemPrompt := fmt.Sprintf(`IMPLEMENT THE Go PROGRAMMING LANGUAGE FUNCTION BODY ONLY.
 
 SIG: %s
-
 TASK: %s
-
 %s
 
 RULES:
-1. OUTPUT BODY ONLY. Do NOT include the "func Name() {" line.
-2. NO MARKDOWN.
-3. NO "lx.Gen".
-4. NEVER add network calls or file I/O unless explicitly required by TASK.
-5. USE // lx-dep: for any new imports/packages you use.
-6. START directly with logic.
-7. COMPLIANCE: If the function signature has return types, you MUST include a return statement.`, signature, prompt, outputSection)
+1. OUTPUT BODY ONLY. NO 'func' or '{'.
+2. NO "lx.Gen".
+3. USE // lx-dep: for any new imports/packages you use.
+4. START directly with logic.
+5. COMPLIANCE: Must include return statements for SIG types.`, signature, prompt, outputSection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout)
 	defer cancel()
